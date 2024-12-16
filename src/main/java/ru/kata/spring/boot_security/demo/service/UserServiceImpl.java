@@ -2,27 +2,27 @@ package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
-import java.util.HashSet;
+
 import java.util.List;
-import java.util.Set;
+
 
 @Service
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
-    RoleRepository roleRepository;
+    PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -39,7 +39,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update(User user){
+    public void update(User user, List<Role> roles){
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(roles);
         userRepository.save(user);
     }
 
@@ -62,4 +64,11 @@ public class UserServiceImpl implements UserService {
                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
+    @Override
+    @Transactional
+    public void saveUser(User user, List<Role> roles) {
+        user.setRoles(roles);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+    }
 }

@@ -25,11 +25,11 @@
       <span th:each="role : ${user.roles}" th:text="${role.name} + ' '"></span>
     </td>
     <td>
-      <form action="/users/update" method="get">
+      <form action="/admin/update" method="get">
         <input type="hidden" name="id" th:value="${user.id}">
         <button type="submit">Update</button>
       </form>
-      <form action="/users/delete" method="post">
+      <form action="/admin/delete" method="post">
         <input type="hidden" name="id" th:value="${user.id}">
         <button type="submit">Delete</button>
       </form>
@@ -38,26 +38,5 @@
   </tbody>
 </table>
 
-<h2 style="text-align: start;">Add New User</h2>
-<form action="/admin/add" method="post">
-  <input type="text" name="name" placeholder="Name" required>
-  <input type="text" name="surname" placeholder="Surname" required>
-  <input type="number" name="age" placeholder="Age" required>
-  <input type="password" name="password" placeholder="Password" required>
-
-  <br/>
-  <p>
-    <label>Roles:
-      <input type="checkbox" name="roleIds"
-             th:each="role : ${roles}"
-             th:text="${role.name()}"
-             th:value="${role.id()}"
-      />
-    </label>
-  </p>
-  <br/>
-
-  <button type="submit">Add User</button>
-</form>
 </body>
 </html>
