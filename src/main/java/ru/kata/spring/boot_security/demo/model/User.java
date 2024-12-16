@@ -18,7 +18,7 @@ public class User implements UserDetails {
     @Column(name = "ID")
     private long id;
 
-    @Column(name = "Name")
+    @Column(name = "Name", nullable = false, unique = true)
     private String username;
 
     @Column(name = "Surname")
@@ -27,7 +27,6 @@ public class User implements UserDetails {
     @Column(name = "Age")
     private int age;
 
-    @Column(name = "Password")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -36,12 +35,11 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles;
+    private List<Role> roles;
 
     public User() {}
 
-    public User(long id, String username, String surname, int age, String password, Set<Role> roles) {
-        this.id = id;
+    public User(String username, String surname, int age, String password, List<Role> roles) {
         this.username = username;
         this.surname = surname;
         this.age = age;
@@ -71,11 +69,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public Set<Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 

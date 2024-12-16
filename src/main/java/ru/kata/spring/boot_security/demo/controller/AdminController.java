@@ -4,49 +4,63 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
-public class UserController {
+@RequestMapping("/admin")
+public class AdminController {
 
     UserService userService;
+    RoleService roleService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
-    }
-
-    @GetMapping("/user")
-    public String showUserPage(Authentication authentication, Model model) {
-        String username = authentication.getName();
-        model.addAttribute(userService.findByUsername(username));
-        return "user";
+        this.roleService = roleService;
     }
 
 
-//    @GetMapping("/users")
-//    public String show(Model model) {
-//        List<User> users = userService.getAll();
-//        model.addAttribute("allUsers", users);
-//        return "admin";
-//    }
+    @GetMapping
+    public String show(Model model) {
+        List<User> users = userService.getAll();
+        model.addAttribute("allUsers", users);
+        return "admin";
+    }
+
+
+    @PostMapping("/add")
+    public String add(
+            @ModelAttribute("user") User user,
+            @RequestParam("roleIds") List<Long> roleIds,
+            Model model
+    ) {
+        List<Role> roles = roleService.getRolesByIds(roleIds); // Получаем роли по их ID
+        user.setRoles(roles); // Устанавливаем роли в объект пользователя
+        userService.add(user); // Сохраняем пользователя
+        return "redirect:/admin"; // Перенаправление на страницу администратора
+    }
 
 //    @PostMapping("/add")
 //    public String add(
 //            @RequestParam String name,
 //            @RequestParam String surname,
 //            @RequestParam int age,
-//            Model model
+//            @RequestParam String password,
+//            @RequestParam List<Long> roleIds
 //    ) {
-//        User user = new User(name, surname, age);
+//        List<Role> roles = roleService.getRolesByIds(roleIds);
+//        System.out.println(roles.size());
+//        User user = new User(name, surname, age, password, roles);
 //        userService.add(user);
-//        return "redirect:/users";
+//        return "redirect:/admin";
 //    }
 
 //    @GetMapping("/update")

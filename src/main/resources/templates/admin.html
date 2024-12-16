@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <title>Users Management</title>
 </head>
 <body>
 <h1 style="text-align: start;">Users List</h1>
@@ -13,15 +12,18 @@
     <th>Name</th>
     <th>Surname</th>
     <th>Age</th>
-    <th>Operarions</th>
+    <th>Roles</th>
+    <th>Operations</th>
   </tr>
   </thead>
   <tbody>
-
   <tr th:each="user : ${allUsers}">
     <td th:text="${user.username}"></td>
     <td th:text="${user.surname}"></td>
     <td th:text="${user.age}"></td>
+    <td>
+      <span th:each="role : ${user.roles}" th:text="${role.name} + ' '"></span>
+    </td>
     <td>
       <form action="/users/update" method="get">
         <input type="hidden" name="id" th:value="${user.id}">
@@ -31,20 +33,31 @@
         <input type="hidden" name="id" th:value="${user.id}">
         <button type="submit">Delete</button>
       </form>
+    </td>
   </tr>
-
   </tbody>
 </table>
 
 <h2 style="text-align: start;">Add New User</h2>
-<form action="/users/add" method="post">
+<form action="/admin/add" method="post">
   <input type="text" name="name" placeholder="Name" required>
   <input type="text" name="surname" placeholder="Surname" required>
   <input type="number" name="age" placeholder="Age" required>
+  <input type="password" name="password" placeholder="Password" required>
+
+  <br/>
+  <p>
+    <label>Roles:
+      <input type="checkbox" name="roleIds"
+             th:each="role : ${roles}"
+             th:text="${role.name()}"
+             th:value="${role.id()}"
+      />
+    </label>
+  </p>
+  <br/>
+
   <button type="submit">Add User</button>
 </form>
-
-
 </body>
-</html>
 </html>
