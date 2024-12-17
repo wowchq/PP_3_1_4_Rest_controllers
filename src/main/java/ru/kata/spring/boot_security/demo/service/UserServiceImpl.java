@@ -11,6 +11,7 @@ import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 
 import javax.naming.AuthenticationException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,13 +41,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-//    @Override
-//    @Transactional
-//    public void update(User user, List<Role> roles){
-//        user.setRoles(roles);
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-//        userRepository.save(user);
-//    }
 
     @Override
     public User getUserById(Long id) {
@@ -61,14 +55,19 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void update(User user, List<Role> roles){
-        User existingUser = findByUsername(user.getUsername());
-        if (existingUser != null && !existingUser.getId().equals(user.getId())) {
+    public void update(User updatedUser, List<Role> roles) {
+        User existingUser = getUserById(updatedUser.getId());
 
-        }
-        System.out.println("Updating user with ID: " + user.getId() + " and username: " + user.getUsername());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+//        boolean usernameExists = userRepository.existsByUsername(updatedUser.getUsername());
+//        if (usernameExists && existingUser.getUsername().contains(updatedUser.getUsername())) {
+//            throw new SQLIntegrityConstraintViolationException("User already exists");
+//        }
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setSurname(updatedUser.getSurname());
+        existingUser.setAge(updatedUser.getAge());
+        existingUser.setRoles(roles);
+        existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        userRepository.save(existingUser);
     }
 
     @Override
@@ -78,15 +77,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User findById(long id){
-        return userRepository.findById(id).orElse(null);
+    public User findById(Long id){
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Override
     @Transactional(readOnly = true)
     public User findByUsername(String username){
-       return userRepository.findByUsername(username)
-               .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+       return userRepository.findByUsername(username);
     }
 
     @Override

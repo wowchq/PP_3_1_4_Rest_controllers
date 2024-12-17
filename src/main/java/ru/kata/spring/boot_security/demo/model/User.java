@@ -18,7 +18,7 @@ public class User implements UserDetails {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "Name", nullable = false)
+    @Column(name = "Name")
     private String username;
 
     @Column(name = "Surname")
@@ -49,6 +49,10 @@ public class User implements UserDetails {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

@@ -25,7 +25,8 @@ public class UserController {
     @GetMapping("/user")
     public String showUserPage(Authentication authentication, Model model) {
         String username = authentication.getName();
-        model.addAttribute(userService.findByUsername(username));
+        Long id = userService.findByUsername(username).getId();
+        model.addAttribute(userService.findById(id));
         return "user";
     }
 

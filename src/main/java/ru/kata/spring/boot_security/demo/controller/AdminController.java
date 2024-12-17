@@ -12,6 +12,7 @@ import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.naming.AuthenticationException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,11 +33,13 @@ public class AdminController {
 
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public String show(Model model) {
         List<User> users = userService.getAll();
         model.addAttribute("allUsers", users);
         return "admin";
     }
+
 
     @GetMapping("/new")
     @PreAuthorize("hasRole('ADMIN')")
@@ -60,18 +63,24 @@ public class AdminController {
 
 
     @GetMapping("/update")
-    public String update(@RequestParam Long id, Model model) {
+    public String showUpdateForm(@RequestParam Long id, Model model) {
         model.addAttribute("user", userService.findById(id));
         model.addAttribute("roles", roleService.getAllRoles());
         return "updateUser";
     }
 
     @PostMapping("/saveUpdate")
-    public String saveUpdate(@ModelAttribute("user") User user,
-                           @RequestParam List<Long> roleIds){
-        List<Role> roles = roleService.getRolesByIds(roleIds);
-        userService.update(user, roles);
-        return "redirect:/admin";
+    public String update(@ModelAttribute("user") User user,
+                         @RequestParam List<Long> roleIds,
+                         Model model) {
+//        try {
+            List<Role> roles = roleService.getRolesByIds(roleIds);
+            userService.update(user, roles);
+            return "redirect:/admin";
+//        } catch (SQLIntegrityConstraintViolationException e) {
+//            model.addAttribute("error", e.getMessage());
+//            return showUpdateForm(user.getId(), model);
+//        }
     }
 
     @PostMapping("/delete")

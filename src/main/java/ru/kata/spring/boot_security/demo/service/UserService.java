@@ -4,6 +4,7 @@ import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
 import javax.naming.AuthenticationException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ public interface UserService {
 
     void delete(long id);
 
-    User findById(long id);
+    User findById(Long id);
 
     User findByUsername(String username);
 
