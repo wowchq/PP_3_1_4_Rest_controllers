@@ -3,26 +3,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Update User</title>
+    <title>Add user</title>
 </head>
 <body>
-<h1 style="text-align: center;">Update User</h1>
-
-<form action="/admin/update" method="post">
+<form th:method="post" th:action="@{/admin/saveUpdate}" th:object="${user}">
     <input type="hidden" name="id" th:value="${user.id}"/>
-    <input type="text" name="name" th:value="${user.username}" required/>
-    <input type="text" name="surname" th:value="${user.surname}" required/>
-    <input type="number" name="age" th:value="${user.age}" required/>
-
-    <select name="roles" id="roles" multiple required>
-        <option th:each="role : ${roles}" th:value="${role.id}"
-                th:text="${role.name}"
-                th:selected="${user.roles.contains(role)}">
-        </option>
-    </select>
-
-    <button type="submit">Update User</button>
+    <label for="username">Enter username: </label>
+    <input type="text" th:field="*{username}" id="username"/>
+    <label for="surname">Enter surname: </label>
+    <input type="text" th:field="*{surname}" id="surname"/>
+    <label for="age">Enter age: </label>
+    <input type="number" th:field="*{age}" id="age"/>
+    <label for="password">Enter password: </label>
+    <input type="password" th:field="*{password}" id="password"/>
+    <br/>
+    <p>
+        <label>Roles:
+            <input type="checkbox" name="roleIds"
+                   th:each="role : ${roles}"
+                   th:text="${role.name}"
+                   th:value="${role.id}"
+                   th:checked="${user.getAuthorities()}"
+            />
+        </label>
+    </p>
+    <br/>
+    <input type="submit" value="Create!"/>
 </form>
-
-</body>
-</html>

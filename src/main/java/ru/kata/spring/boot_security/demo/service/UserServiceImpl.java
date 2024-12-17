@@ -10,10 +10,13 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 
+import javax.naming.AuthenticationException;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
@@ -32,21 +35,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public void add(User user){
-        userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
-    public void update(User user, List<Role> roles){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(roles);
+        userRepository.save(user);
+    }
+
+//    @Override
+//    @Transactional
+//    public void update(User user, List<Role> roles){
+//        user.setRoles(roles);
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        userRepository.save(user);
+//    }
+
+    @Override
+    public User getUserById(Long id) {
+        User user = null;
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+        }
+        return user;
+    }
+
+
+
+    @Override
+    public void update(User user, List<Role> roles){
+        User existingUser = findByUsername(user.getUsername());
+        if (existingUser != null && !existingUser.getId().equals(user.getId())) {
+
+        }
+        System.out.println("Updating user with ID: " + user.getId() + " and username: " + user.getUsername());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
     @Override
-    @Transactional
     public void delete(long id){
         userRepository.deleteById(id);
     }
@@ -65,7 +90,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public void saveUser(User user, List<Role> roles) {
         user.setRoles(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));

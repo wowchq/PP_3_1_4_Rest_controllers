@@ -1,25 +1,60 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Add User</title>
+  <title>Add user</title>
 </head>
 <body>
-<h2 style="text-align: start;">Add New User</h2>
-<form action="/admin/add" method="post">
-  <input type="text" name="username" placeholder="Name" required>
-  <input type="text" name="surname" placeholder="Surname" required>
-  <input type="number" name="age" placeholder="Age" required>
-  <input type="password" name="password" placeholder="Password" required>
-
-  <label for="roles">Select Roles:</label>
-  <select name="roleIds" id="roles" multiple required>
-    <th:block th:each="role : ${roles}">
-      <option th:value="${role.id}" th:text="${role.name}"> </option>
-    </th:block>
-  </select>
-
-  <button type="submit">Add User</button>
+<form th:method="post" th:action="@{/admin/add}" th:object="${user}">
+  <label for="username">Enter username: </label>
+  <input type="text" th:field="*{username}" id="username"/>
+  <label for="surname">Enter surname: </label>
+  <input type="text" th:field="*{surname}" id="surname"/>
+  <label for="age">Enter age: </label>
+  <input type="number" th:field="*{age}" id="age"/>
+  <label for="password">Enter password: </label>
+  <input type="password" th:field="*{password}" id="password"/>
+  <br/>
+  <p>
+    <label>Roles:
+      <input type="checkbox" name="roleIds"
+             th:each="role : ${roles}"
+             th:text="${role.name}"
+             th:value="${role.id}"
+      />
+    </label>
+  </p>
+  <br/>
+  <input type="submit" value="Create!"/>
 </form>
-</body>
-</html>
+
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <title>Add User</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h2 style="text-align: start;">Add New User</h2>-->
+<!--<form action="/admin/new" method="post">-->
+<!--  <input type="text" name="username" placeholder="Name" th:value="${user.username}" required>-->
+<!--  <input type="text" name="surname" placeholder="Surname" th:value="${user.surname}" required>-->
+<!--  <input type="number" name="age" placeholder="Age" th:value="${user.age}" required>-->
+<!--  <input type="password" name="password" placeholder="Password" th:value="${user.password}" required>-->
+
+<!--  <label for="roles">Select Roles:</label>-->
+<!--  <select name="roleIds" id="roles" multiple required>-->
+<!--    <th:block th:each="role : ${roles}">-->
+<!--      <option th:value="${role.id}" th:text="${role.name}"-->
+<!--              th:selected="${user.roles.contains(role)}"></option>-->
+<!--    </th:block>-->
+<!--  </select>-->
+
+<!--  <button type="submit">Add User</button>-->
+<!--</form>-->
+<!--</body>-->
+<!--</html>-->

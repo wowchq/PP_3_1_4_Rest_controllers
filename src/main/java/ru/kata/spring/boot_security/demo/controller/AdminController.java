@@ -11,6 +11,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import javax.naming.AuthenticationException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +58,7 @@ public class AdminController {
         return "redirect:/admin";
     }
 
+
     @GetMapping("/update")
     public String update(@RequestParam Long id, Model model) {
         model.addAttribute("user", userService.findById(id));
@@ -64,12 +66,10 @@ public class AdminController {
         return "updateUser";
     }
 
-    @PostMapping("/update")
-    public String saveUpdate(
-            @ModelAttribute User user,
-            @RequestParam("roleIds") List<Long> roleIds
-    ) {
-        List<Role> roles = new ArrayList<>(roleService.getRolesByIds(roleIds));
+    @PostMapping("/saveUpdate")
+    public String saveUpdate(@ModelAttribute("user") User user,
+                           @RequestParam List<Long> roleIds){
+        List<Role> roles = roleService.getRolesByIds(roleIds);
         userService.update(user, roles);
         return "redirect:/admin";
     }
