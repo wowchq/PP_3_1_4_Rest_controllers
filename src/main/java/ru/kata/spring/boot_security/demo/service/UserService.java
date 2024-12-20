@@ -14,7 +14,7 @@ public interface UserService {
 
     void add(User user);
 
-    void update(User user, List<Role> roles);
+    void update(User user, Set<Role> roles);
 
     User getUserById(Long id);
 
@@ -24,6 +24,6 @@ public interface UserService {
 
     User findByUsername(String username);
 
-    void saveUser(User user, List<Role> roles);
+    void saveUser(User user, Set<Role> roles);
 
 }

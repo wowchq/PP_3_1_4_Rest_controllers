@@ -46,7 +46,7 @@ public class AdminController {
         model.addAttribute("user", user);
         List<User> users = userService.getAll();
         model.addAttribute("allUsers", users);
-        List<Role> roles = roleService.getAllRoles();
+        Set<Role> roles = roleService.getAllRoles();
         model.addAttribute("allRoles", roles);
         return "admin";
     }
@@ -56,7 +56,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public String addUserForm(Model model) {
         model.addAttribute("user", new User());
-        List<Role> roles = roleService.getAllRoles();
+        Set<Role> roles = roleService.getAllRoles();
         model.addAttribute("roles", roles);
         return "userForm";
     }
@@ -67,7 +67,7 @@ public class AdminController {
             @ModelAttribute("user") User user,
             @RequestParam("roleIds") List<Long> roleIds
     ) {
-        List<Role> roles = new ArrayList<>(roleService.getRolesByIds(roleIds));
+        Set<Role> roles = new HashSet<>(roleService.getRolesByIds(roleIds));
         userService.saveUser(user, roles);
         return "redirect:/admin";
     }
@@ -84,7 +84,7 @@ public class AdminController {
     public String update(@ModelAttribute("user") User user,
                          @RequestParam List<Long> roleIds) {
 
-        List<Role> roles = roleService.getRolesByIds(roleIds);
+        Set<Role> roles = roleService.getRolesByIds(roleIds);
         userService.update(user, roles);
         return "redirect:/admin";
     }

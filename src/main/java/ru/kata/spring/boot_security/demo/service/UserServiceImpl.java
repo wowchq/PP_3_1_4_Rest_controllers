@@ -10,10 +10,9 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 
-import javax.naming.AuthenticationException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Service
@@ -55,13 +54,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void update(User updatedUser, List<Role> roles) {
+    public void update(User updatedUser, Set<Role> roles) {
         User existingUser = getUserById(updatedUser.getId());
 
-//        boolean usernameExists = userRepository.existsByUsername(updatedUser.getUsername());
-//        if (usernameExists && existingUser.getUsername().contains(updatedUser.getUsername())) {
-//            throw new SQLIntegrityConstraintViolationException("User already exists");
-//        }
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setSurname(updatedUser.getSurname());
         existingUser.setAge(updatedUser.getAge());
@@ -91,7 +86,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(User user, List<Role> roles) {
+    public void saveUser(User user, Set<Role> roles) {
         user.setRoles(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
