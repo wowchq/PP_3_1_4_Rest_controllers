@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.naming.AuthenticationException;
+import java.security.Principal;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,12 +33,21 @@ public class AdminController {
         this.roleService = roleService;
     }
 
+    @GetMapping("/user")
+    public String getUserById(@RequestParam(value = "id") Long id, Model model) {
+        model.addAttribute("user", userService.getUserById(id));
+        return "user";
+    }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public String show(Model model) {
+    public String show(Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        model.addAttribute("user", user);
         List<User> users = userService.getAll();
         model.addAttribute("allUsers", users);
+        List<Role> roles = roleService.getAllRoles();
+        model.addAttribute("allRoles", roles);
         return "admin";
     }
 
@@ -71,16 +82,11 @@ public class AdminController {
 
     @PostMapping("/saveUpdate")
     public String update(@ModelAttribute("user") User user,
-                         @RequestParam List<Long> roleIds,
-                         Model model) {
-//        try {
-            List<Role> roles = roleService.getRolesByIds(roleIds);
-            userService.update(user, roles);
-            return "redirect:/admin";
-//        } catch (SQLIntegrityConstraintViolationException e) {
-//            model.addAttribute("error", e.getMessage());
-//            return showUpdateForm(user.getId(), model);
-//        }
+                         @RequestParam List<Long> roleIds) {
+
+        List<Role> roles = roleService.getRolesByIds(roleIds);
+        userService.update(user, roles);
+        return "redirect:/admin";
     }
 
     @PostMapping("/delete")

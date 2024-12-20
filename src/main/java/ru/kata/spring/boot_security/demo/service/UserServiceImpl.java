@@ -66,7 +66,10 @@ public class UserServiceImpl implements UserService {
         existingUser.setSurname(updatedUser.getSurname());
         existingUser.setAge(updatedUser.getAge());
         existingUser.setRoles(roles);
-        existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        String newPassword = updatedUser.getPassword();
+        if (!newPassword.isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
         userRepository.save(existingUser);
     }
 
