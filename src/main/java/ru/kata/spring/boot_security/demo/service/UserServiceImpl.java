@@ -7,24 +7,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
 
+    RoleService roleService;
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,  RoleService roleService) {
         this.userRepository = userRepository;
+        this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -37,6 +41,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void add(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Set<Role> existingRoles = user.getRoles().stream()
+                .map(role -> roleService.getRoleById(role.getId()))
+                .collect(Collectors.toSet());
+        user.setRoles(existingRoles);
         userRepository.save(user);
     }
 
